@@ -2,6 +2,8 @@
 
 A customized tmux configuration with vim-tmux integration, smart pane switching, and the Dracula theme.
 
+Config path: `~/.config/tmux/`
+
 ## Features
 
 - **Vim Integration**: Seamless navigation between vim and tmux panes using Ctrl+hjkl (via [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator))
@@ -109,9 +111,9 @@ Or run directly:
 
 Edit `~/.tmux.conf` to customize:
 
-- **Location**: Change `Tbilisi` in the line:
+- **Location**: Change `New York` in the line:
   ```bash
-  set -g @dracula-fixed-location "Tbilisi"
+  set -g @dracula-fixed-location "New York"
   ```
 
 - **Plugins**: Modify the plugins list:

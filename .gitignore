@@ -1,0 +1,3 @@
+# Plugins are installed by TPM (see tmux.conf)
+plugins/*
+!plugins/.keep

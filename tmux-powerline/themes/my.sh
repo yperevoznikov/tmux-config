@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# Dracula palette
+DRACULA_BG="235"
+DRACULA_FG="255"
+DRACULA_PURPLE="141"
+DRACULA_YELLOW="228"
+DRACULA_GREEN="84"
+
+# Powerline separators
+if tp_patched_font_in_use; then
+    TMUX_POWERLINE_SEPARATOR_LEFT_BOLD=""
+    TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD=""
+    TMUX_POWERLINE_SEPARATOR_RIGHT_THIN=""
+else
+    TMUX_POWERLINE_SEPARATOR_LEFT_BOLD="◀"
+    TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD="▶"
+    TMUX_POWERLINE_SEPARATOR_RIGHT_THIN="❯"
+fi
+
+TMUX_POWERLINE_DEFAULT_BACKGROUND_COLOR="$DRACULA_BG"
+TMUX_POWERLINE_DEFAULT_FOREGROUND_COLOR="$DRACULA_FG"
+
+TMUX_POWERLINE_DEFAULT_LEFTSIDE_SEPARATOR="$TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD"
+TMUX_POWERLINE_DEFAULT_RIGHTSIDE_SEPARATOR="$TMUX_POWERLINE_SEPARATOR_LEFT_BOLD"
+
+# ── Left ──────────────────────────────────────────────
+# Session + current directory
+TMUX_POWERLINE_LEFT_STATUS_SEGMENTS=(
+    "tmux_session_info $DRACULA_PURPLE $DRACULA_FG"
+)
+
+# ── Right ─────────────────────────────────────────────
+# Git branch + current directory
+TMUX_POWERLINE_RIGHT_STATUS_SEGMENTS=(
+    "pwd $DRACULA_YELLOW $DRACULA_BG"
+    "vcs_branch $DRACULA_GREEN $DRACULA_BG"
+)
+
+# ── Windows ───────────────────────────────────────────
+# Current window: Dracula purple
+TMUX_POWERLINE_WINDOW_STATUS_CURRENT=(
+    "#[fg=colour$DRACULA_BG,bg=colour$DRACULA_PURPLE]"
+    " #I #W "
+    "#[fg=colour$DRACULA_PURPLE,bg=colour$DRACULA_BG]"
+    "$TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD"
+)
+
+# Inactive windows
+TMUX_POWERLINE_WINDOW_STATUS_FORMAT=(
+    "#[fg=colour$DRACULA_FG,bg=colour$DRACULA_BG]"
+    " #I #W "
+)
