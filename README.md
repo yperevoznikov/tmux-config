@@ -1,56 +1,73 @@
 # tmux-config
 
-A customized tmux configuration with vim-tmux integration, smart pane switching, and the Dracula theme.
+A customized tmux configuration with vim-tmux integration, smart pane switching, the Dracula theme, and a custom tmux-powerline status bar.
 
 Config path: `~/.config/tmux/`
+
+## Repository structure
+
+```
+~/.config/tmux/
+├── tmux.conf                 # Main tmux configuration
+├── tmux-powerline/           # Local tmux-powerline overlay (not committed as a plugin)
+│   ├── config.sh             # Powerline segment and theme settings
+│   └── themes/
+│       └── my.sh             # Custom Dracula-themed powerline theme
+└── plugins/                  # TPM plugin installs (gitignored, created on first use)
+    └── .keep
+```
+
+Plugins are managed by [tpm](https://github.com/tmux-plugins/tpm) and installed into `plugins/` at runtime:
+
+- `tpm` — plugin manager
+- `vim-tmux-navigator` — vim-aware pane navigation
+- `dracula/tmux` — Dracula color theme
+- `erikw/tmux-powerline` — status bar segments
 
 ## Features
 
 - **Vim Integration**: Seamless navigation between vim and tmux panes using Ctrl+hjkl (via [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator))
 - **Smart Pane Switching**: Intelligent pane navigation that respects vim splits
-- **Dracula Theme**: Beautiful color scheme with powerline support
+- **Dracula Theme**: Color scheme via [dracula/tmux](https://github.com/dracula/tmux)
+- **Custom Status Bar**: [tmux-powerline](https://github.com/erikw/tmux-powerline) with a local `my` theme and config overlay
 - **Mouse Support**: Full mouse support for pane selection and window management
-- **Custom Bindings**: 
+- **Custom Bindings**:
   - `Ctrl+Space` as prefix (instead of default `Ctrl+b`)
   - `Ctrl+Shift+Left/Right` to move and switch windows
   - `Alt+o` to switch to last window
   - New panes and windows inherit current directory
-- **Plugin Manager**: Uses [tpm](https://github.com/tmux-plugins/tpm) for plugin management
+- **Plugin Manager**: Uses [tpm](https://github.com/tmux-plugins/tpm) with plugins under `~/.config/tmux/plugins`
 
 ## Installation
 
 ### Prerequisites
 
-- tmux (version 2.9+)
-- curl
-- Git (for tpm plugin manager)
+- tmux 2.9+ (3.1+ recommended for XDG config discovery at `~/.config/tmux/tmux.conf`)
+- curl or git
+- Git (for cloning this repo and tpm)
 
-### Quick Install
+### Quick install
 
-Run the installation script to:
-1. Backup your current tmux configuration (if it exists)
-2. Download the latest configuration from this repository
+Clone the repository into the XDG config directory, then install plugins:
 
 ```bash
-#!/bin/bash
-
-# Backup existing config if it exists
-if [ -f ~/.tmux.conf ]; then
-    BACKUP_FILE="$HOME/.tmux.conf.back.$(date +%Y%m%d_%H%M%S)"
-    cp ~/.tmux.conf "$BACKUP_FILE"
-    echo "✓ Backed up existing config to: $BACKUP_FILE"
+# Backup existing config if present
+if [ -d ~/.config/tmux ]; then
+    BACKUP_DIR="$HOME/.config/tmux.back.$(date +%Y%m%d_%H%M%S)"
+    mv ~/.config/tmux "$BACKUP_DIR"
+    echo "✓ Backed up existing config to: $BACKUP_DIR"
 fi
 
-# Download new configuration
-curl -fsSL https://raw.githubusercontent.com/yperevoznikov/tmux-config/refs/heads/main/.tmux.conf -o ~/.tmux.conf
-echo "✓ Downloaded tmux configuration to ~/.tmux.conf"
+# Clone configuration
+git clone https://github.com/yperevoznikov/tmux-config.git ~/.config/tmux
+echo "✓ Cloned tmux configuration to ~/.config/tmux"
 
-# Create plugins directory if it doesn't exist
-mkdir -p ~/.tmux/plugins
+# Create plugins directory
+mkdir -p ~/.config/tmux/plugins
 
 # Clone tpm if not already installed
-if [ ! -d ~/.tmux/plugins/tpm ]; then
-    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+if [ ! -d ~/.config/tmux/plugins/tpm ]; then
+    git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
     echo "✓ Installed tmux plugin manager"
 fi
 
@@ -58,26 +75,39 @@ echo ""
 echo "Installation complete! Start a new tmux session and press Ctrl+Space + I to install plugins."
 ```
 
-### Manual Installation
+If your tmux version does not read `~/.config/tmux/tmux.conf` automatically, start tmux with an explicit config file:
 
-If you prefer to do it step by step:
+```bash
+tmux -f ~/.config/tmux/tmux.conf
+```
+
+Or symlink it to the legacy location:
+
+```bash
+ln -sf ~/.config/tmux/tmux.conf ~/.tmux.conf
+```
+
+### Manual installation
 
 ```bash
 # 1. Backup your current config
-if [ -f ~/.tmux.conf ]; then
-    cp ~/.tmux.conf ~/.tmux.conf.back.$(date +%Y%m%d_%H%M%S)
+if [ -d ~/.config/tmux ]; then
+    mv ~/.config/tmux ~/.config/tmux.back.$(date +%Y%m%d_%H%M%S)
 fi
 
-# 2. Download the configuration
-curl -fsSL https://raw.githubusercontent.com/yperevoznikov/tmux-config/refs/heads/main/.tmux.conf -o ~/.tmux.conf
+# 2. Clone the repository
+git clone https://github.com/yperevoznikov/tmux-config.git ~/.config/tmux
 
-# 3. Reload tmux
-tmux source-file ~/.tmux.conf
+# 3. Install tpm
+git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+
+# 4. Reload tmux
+tmux source-file ~/.config/tmux/tmux.conf
 ```
 
-## Post-Installation
+## Post-installation
 
-After installation, the first time you start tmux, install the plugins:
+After installation, install tpm-managed plugins the first time you start tmux:
 
 ```bash
 tmux new-session -d
@@ -87,12 +117,12 @@ tmux new-session -d
 Or run directly:
 
 ```bash
-~/.tmux/plugins/tpm/bin/install_plugins
+~/.config/tmux/plugins/tpm/bin/install_plugins
 ```
 
 ## Configuration
 
-### Key Bindings
+### Key bindings
 
 | Binding | Action |
 |---------|--------|
@@ -109,9 +139,9 @@ Or run directly:
 
 ### Customization
 
-Edit `~/.tmux.conf` to customize:
+**General settings and plugins** — edit `~/.config/tmux/tmux.conf`:
 
-- **Location**: Change `New York` in the line:
+- **Location**: Change `New York` in the Dracula weather setting:
   ```bash
   set -g @dracula-fixed-location "New York"
   ```
@@ -121,45 +151,65 @@ Edit `~/.tmux.conf` to customize:
   set -g @plugin 'tmux-plugins/tpm'
   set -g @plugin 'christoomey/vim-tmux-navigator'
   set -g @plugin 'dracula/tmux'
+  set -g @plugin 'erikw/tmux-powerline'
   ```
 
-- **Theme Settings**: Adjust Dracula theme options (all prefixed with `@dracula-`)
+- **Theme settings**: Adjust Dracula theme options (all prefixed with `@dracula-`)
+
+**Status bar** — edit files under `~/.config/tmux/tmux-powerline/`:
+
+- `config.sh` — segment options, refresh interval, and theme name (`my`)
+- `themes/my.sh` — segment layout and Dracula color palette for the powerline status bar
 
 After making changes, reload with: `Ctrl+Space + r`
 
 ## Troubleshooting
 
 ### Plugins not loading
+
 Make sure tpm is installed:
+
 ```bash
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 ```
 
 Then press `Ctrl+Space + I` in a tmux session to install plugins.
 
+### Config not picked up
+
+Confirm tmux is loading the XDG config path, or pass the file explicitly:
+
+```bash
+tmux -f ~/.config/tmux/tmux.conf
+```
+
 ### Vim keybindings not working
+
 Ensure vim-tmux-navigator is installed and your vim has the corresponding plugin configured. See [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) for setup.
 
 ### Color scheme issues
+
 If colors don't look right, ensure your terminal supports 256 colors:
+
 ```bash
 echo $TERM
 # Should output: xterm-256color or similar
 ```
 
-## Reverting Changes
+## Reverting changes
 
-To restore your previous configuration:
+To restore a previous configuration:
 
 ```bash
-rm ~/.tmux.conf
-mv ~/.tmux.conf.back.YYYYMMDD_HHMMSS ~/.tmux.conf
-tmux source-file ~/.tmux.conf
+rm -rf ~/.config/tmux
+mv ~/.config/tmux.back.YYYYMMDD_HHMMSS ~/.config/tmux
+tmux source-file ~/.config/tmux/tmux.conf
 ```
 
 ## Inspiration
 
 This configuration is inspired by:
+
 - [faroit's tmux configuration](https://gist.github.com/faroit/ee545a2cec29f5fcc26edb6fe415cfe0)
 - [Practical tmux](https://mutelight.org/practical-tmux)
 
